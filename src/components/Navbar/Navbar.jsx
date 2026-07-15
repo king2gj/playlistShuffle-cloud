@@ -101,24 +101,6 @@ function Navbar({
             Shuffle Playlist{' '}
           </h1>
         </button>
-        <button
-            type="button"
-            aria-label={player.isDataSaverActive ? 'disable data saver mode' : 'enable data saver mode'}
-            className="p-[0.25rem] md:p-[0.50rem] mx-2 md:mx-0"
-            onClick={handleClickDataSaver}
-        >
-          {player.isDataSaverActive ? (
-              <MdDataSaverOn
-                  className="text-primary hover:text-secondary drop-shadow-svgShadow dark:drop-shadow-svgShadowDarkMode active:scale-110"
-                  size={28}
-              />
-          ) : (
-              <MdDataSaverOff
-                  className="text-primary hover:text-secondary drop-shadow-svgShadow dark:drop-shadow-svgShadowDarkMode active:scale-110"
-                  size={28}
-              />
-          )}
-        </button>
         <div className="flex flex-row mr-2">
           {player.theme === 'image' && (
             <div className="flex">
@@ -136,6 +118,24 @@ function Navbar({
                   />
                 </a>
               </div>
+              <button
+                type="button"
+                aria-label={player.isDataSaverActive ? 'disable data saver mode' : 'enable data saver mode'}
+                className="p-[0.25rem] md:p-[0.50rem] mx-2 md:mx-0"
+                onClick={handleClickDataSaver}
+              >
+                {player.isDataSaverActive ? (
+                    <MdDataSaverOn
+                        className="text-primary hover:text-secondary drop-shadow-svgShadow dark:drop-shadow-svgShadowDarkMode active:scale-110"
+                        size={28}
+                    />
+                ) : (
+                    <MdDataSaverOff
+                        className="text-primary hover:text-secondary drop-shadow-svgShadow dark:drop-shadow-svgShadowDarkMode active:scale-110"
+                        size={28}
+                    />
+                )}
+              </button>
               <div className="my-auto mr-1">
                 <BsFillSunFill
                   fill="white"
@@ -163,6 +163,24 @@ function Navbar({
                   />
                 </a>
               </div>
+              <button
+                type="button"
+                aria-label={player.isDataSaverActive ? 'disable data saver mode' : 'enable data saver mode'}
+                className="p-[0.25rem] md:p-[0.50rem] mx-2 md:mx-0"
+                onClick={handleClickDataSaver}
+              >
+                {player.isDataSaverActive ? (
+                    <MdDataSaverOn
+                        className="text-primary hover:text-secondary drop-shadow-svgShadow dark:drop-shadow-svgShadowDarkMode active:scale-110"
+                        size={28}
+                    />
+                ) : (
+                    <MdDataSaverOff
+                        className="text-primary hover:text-secondary drop-shadow-svgShadow dark:drop-shadow-svgShadowDarkMode active:scale-110"
+                        size={28}
+                    />
+                )}
+              </button>
               <div className="my-auto mr-1">
                 <BsImageFill
                   fill="white"
@@ -190,6 +208,24 @@ function Navbar({
                   />
                 </a>
               </div>
+              <button
+                type="button"
+                aria-label={player.isDataSaverActive ? 'disable data saver mode' : 'enable data saver mode'}
+                className="p-[0.25rem] md:p-[0.50rem] mx-2 md:mx-0"
+                onClick={handleClickDataSaver}
+              >
+                {player.isDataSaverActive ? (
+                    <MdDataSaverOn
+                        className="text-primary hover:text-secondary drop-shadow-svgShadow dark:drop-shadow-svgShadowDarkMode active:scale-110"
+                        size={28}
+                    />
+                ) : (
+                    <MdDataSaverOff
+                        className="text-primary hover:text-secondary drop-shadow-svgShadow dark:drop-shadow-svgShadowDarkMode active:scale-110"
+                        size={28}
+                    />
+                )}
+              </button>
               <div className="my-auto mr-1">
                 <BsFillMoonFill
                   fill="black"

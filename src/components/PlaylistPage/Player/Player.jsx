@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import ReactPlayer from 'react-player/youtube';
 import PropTypes from 'prop-types';
@@ -37,6 +37,7 @@ function Player({
   setSeekTo,
 }) {
   const playerRef = useRef(null);
+  const [hasDismissedPreview, setHasDismissedPreview] = useState(false);
 
   useEffect(() => {
     if (player.seekKeyboard !== null) {
@@ -52,6 +53,20 @@ function Player({
       internalPlayer.setPlaybackQuality('small');
     }
   }
+
+  // react-player's `light` preview only ever needs to be clicked once per page load (its
+  // internal `showPreview` state isn't reset on song changes) - shrinking the player before
+  // that first click has happened would make the preview impossible to reach/click, so data
+  // saver's shrink-down styling is only applied once that first click has already occurred.
+  const handleClickPreview = () => {
+    setHasDismissedPreview(true);
+  };
+
+  // Re-apply the quality hint immediately when data saver is toggled mid-song, not just on
+  // the next `onReady`/`onPlay` events.
+  useEffect(() => {
+    applyDataSaverQualityHint();
+  }, [player.isDataSaverActive]);
 
   const findPlaylistIndex = playlistDetails.findIndex(
     (element) => element.playlistId === player.currentActivePlaylistId,
@@ -184,9 +199,15 @@ function Player({
     getPercentage(e.playedSeconds, player.videoDuration);
   };
 
+  // Only shrink the player down for data saver once the one-time preview click (see
+  // handleClickPreview above) has already happened - otherwise the preview's play button
+  // would be shrunk down to an unreachable 2px, unclickable target and playback could
+  // never start in the first place.
+  const shouldApplyDataSaverStyling = player.isDataSaverActive && hasDismissedPreview;
+
   return (
     <div className={
-      player.isDataSaverActive
+      shouldApplyDataSaverStyling
           ? 'player absolute opacity-0 pointer-events-none h-1 w-1 overflow-hidden'
           : 'player h-full aspect-auto md:w-full md:mx-2 md:h-full'
     }>
@@ -199,6 +220,7 @@ function Player({
         onError={() => handleError()}
         onPlay={() => handlePlay()}
         onPause={() => handlePause()}
+        onClickPreview={handleClickPreview}
         light
         config={{
           youtube: {
@@ -210,9 +232,9 @@ function Player({
         onReady={() => handleReady()}
         onEnded={() => handleEnd()}
         volume={player.volume}
-        controls={!player.isDataSaverActive}
-        width={player.isDataSaverActive ? '2px' : '100%'}
-        height={player.isDataSaverActive ? '2px' : '100%'}
+        controls={!shouldApplyDataSaverStyling}
+        width={shouldApplyDataSaverStyling ? '2px' : '100%'}
+        height={shouldApplyDataSaverStyling ? '2px' : '100%'}
         loop={player.isLoopActive}
         url={`https://www.youtube.com/embed/${player.currentSong}`}
       />
