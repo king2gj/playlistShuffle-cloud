@@ -28,7 +28,7 @@ function Login({ loginUser }) {
     <div className="transition-colors bg-backColor image:bg-[unset] flex items-center justify-center h-screen min-h-screen">
       <HelmetHelper title="Log in - Playlist Shuffle" />
       <form
-        className="w-11/12 md:w-1/3 mx-auto text-textColor"
+        className="w-11/12 md:w-1/3 mx-auto text-textColorInside bg-primary rounded-lg shadow-shadowBox dark:shadow-shadowBoxDarkMode p-6"
         onSubmit={handleSubmit}
       >
         <h1 className="text-2xl font-bold font-open mb-4 text-center">
@@ -54,7 +54,7 @@ function Login({ loginUser }) {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button
-          className="w-full rounded-md px-4 py-2 font-open shadow-shadowBox active:shadow-none dark:shadow-shadowBoxDarkMode dark:active:shadow-none text-textColorInside hover:bg-secondary bg-primary active:scale-105"
+          className="w-full rounded-md px-4 py-2 font-open shadow-shadowBox active:shadow-none dark:shadow-shadowBoxDarkMode dark:active:shadow-none text-textColorInside hover:bg-secondary bg-backColor/20 active:scale-105"
           type="submit"
           disabled={isSubmitting}
         >
@@ -62,7 +62,7 @@ function Login({ loginUser }) {
         </button>
         <p className="text-center mt-4 font-open">
           Don&apos;t have an account?&nbsp;
-          <Link className="text-secondary font-semibold underline" to="/register">
+          <Link className="font-semibold underline" to="/register">
             Register
           </Link>
         </p>
