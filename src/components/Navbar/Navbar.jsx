@@ -29,6 +29,7 @@ function Navbar({
   setSearchInput,
   setWordsToSearch,
   setIsPlLoading,
+  isDataSaverActive,
 }) {
   const navigate = useNavigate();
 
@@ -220,6 +221,7 @@ Navbar.propTypes = {
   setSearchInput: PropTypes.func.isRequired,
   setWordsToSearch: PropTypes.func.isRequired,
   setIsPlLoading: PropTypes.func.isRequired,
+  isDataSaverActive: PropTypes.func.isRequired,
 };
 
 const mapDispatchToProps = {
