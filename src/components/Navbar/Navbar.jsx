@@ -53,21 +53,6 @@ function Navbar({
   };
 
   useEffect(() => {
-    if (player.theme === 'light') {
-      document.documentElement.classList.remove('dark');
-      document.documentElement.classList.remove('image');
-      document.documentElement.classList.add('light');
-    }
-    if (player.theme === 'dark') {
-      document.documentElement.classList.remove('light');
-      document.documentElement.classList.remove('image');
-      document.documentElement.classList.add('dark');
-    }
-    if (player.theme === 'image') {
-      document.documentElement.classList.remove('light');
-      document.documentElement.classList.remove('dark');
-      document.documentElement.classList.add('image');
-    }
     isDataSaverActive(readDataSaverPreferences());
   }, []);
 

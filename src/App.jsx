@@ -26,6 +26,24 @@ function App({
   useEffect(() => {
     setWordsToSearch('');
     restoreSession();
+    // Applies the `light`/`dark`/`image` class tw-colors' theme plugin relies on to every
+    // page — this used to only run inside Navbar, so pages without a Navbar (e.g. Login,
+    // Register) never got a theme class and every themed color utility silently no-opped.
+    if (player.theme === 'light') {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove('image');
+      document.documentElement.classList.add('light');
+    }
+    if (player.theme === 'dark') {
+      document.documentElement.classList.remove('light');
+      document.documentElement.classList.remove('image');
+      document.documentElement.classList.add('dark');
+    }
+    if (player.theme === 'image') {
+      document.documentElement.classList.remove('light');
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('image');
+    }
   }, []);
   useEffect(() => {
     if (auth.isAuthenticated) {
