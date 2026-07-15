@@ -2,7 +2,7 @@ import React, { memo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { BsFillMoonFill, BsFillSunFill, BsImageFill } from 'react-icons/bs';
-import { MdDataSaverOn, MdDataSaverOff } from 'react-icons/md';
+import { MdDataSaverOn, MdDataSaverOff, MdLogout } from 'react-icons/md';
 import PropTypes from 'prop-types';
 import {
   isPlaying,
@@ -16,6 +16,7 @@ import {
   isDataSaverActive,
 } from '../../redux/actions/playerActions';
 import setSearchInput from '../../redux/actions/homepageActions';
+import { logoutUser } from '../../redux/actions/authActions';
 import { readDataSaverPreferences, writeDataSaverPreference } from "../../utils/dataSaverPreference";
 
 function Navbar({
@@ -30,6 +31,7 @@ function Navbar({
   setWordsToSearch,
   setIsPlLoading,
   isDataSaverActive,
+  logoutUser,
 }) {
   const navigate = useNavigate();
 
@@ -43,6 +45,11 @@ function Navbar({
     setSearchInput('');
     setWordsToSearch('');
     return navigate('/');
+  };
+
+  const handleClickLogout = () => {
+    logoutUser();
+    navigate('/login');
   };
 
   useEffect(() => {
@@ -102,6 +109,17 @@ function Navbar({
           </h1>
         </button>
         <div className="flex flex-row mr-2">
+          <button
+            type="button"
+            aria-label="log out"
+            className="p-[0.25rem] md:p-[0.50rem] mx-2 md:mx-0"
+            onClick={handleClickLogout}
+          >
+            <MdLogout
+              className="text-primary hover:text-secondary drop-shadow-svgShadow dark:drop-shadow-svgShadowDarkMode active:scale-110"
+              size={28}
+            />
+          </button>
           {player.theme === 'image' && (
             <div className="flex">
               <div className="flex flex-row mx-4 my-auto rounded-md w-44 justify-evenly hover:scale-105 active:scale-110">
@@ -258,6 +276,7 @@ Navbar.propTypes = {
   setWordsToSearch: PropTypes.func.isRequired,
   setIsPlLoading: PropTypes.func.isRequired,
   isDataSaverActive: PropTypes.func.isRequired,
+  logoutUser: PropTypes.func.isRequired,
 };
 
 const mapDispatchToProps = {
@@ -271,6 +290,7 @@ const mapDispatchToProps = {
   setSearchInput,
   setWordsToSearch,
   setIsPlLoading,
+  logoutUser,
 };
 
 const mapStateToProps = (state) => ({

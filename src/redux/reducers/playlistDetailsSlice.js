@@ -1,5 +1,6 @@
 import {
   PLAYLIST_DETAILS_ADD_TO_PLAYLIST_DETAILS,
+  PLAYLIST_DETAILS_SET,
   PLAYLIST_DETAILS_DELETE_FROM_PLAYLIST_DETAILS,
   PLAYLIST_DETAILS_ETAG,
   PLAYLIST_DETAILS_LAST_PLAYED_INDEX,
@@ -11,7 +12,7 @@ const initialState = [];
 
 export default function playlistDetailsReducer(state = initialState, action) {
   switch (action.type) {
-    case "playlistDetails/add": {
+    case PLAYLIST_DETAILS_SET: {
       return action.payload;
     }
     case PLAYLIST_DETAILS_ADD_TO_PLAYLIST_DETAILS: {

@@ -18,6 +18,7 @@ import {
   PLAYER_IS_PL_LOADING,
   PLAYER_SEARCH_WORDS,
   PLAYER_REVERSE_DURATION, PLAYER_IS_DATA_SAVER_ACTIVE,
+  PLAYER_SET_PLAYLIST_HYDRATING,
 } from '../constants/playerTypes';
 
 export const isPlaying = (payload) => ({ type: PLAYER_IS_PLAYING, payload });
@@ -114,5 +115,10 @@ export const setVideoCountdown = (payload) => ({
 
 export const isDataSaverActive = (payload) => ({
   type: PLAYER_IS_DATA_SAVER_ACTIVE,
+  payload,
+});
+
+export const setPlaylistHydrating = (payload) => ({
+  type: PLAYER_SET_PLAYLIST_HYDRATING,
   payload,
 });

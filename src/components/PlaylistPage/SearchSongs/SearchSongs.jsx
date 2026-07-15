@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { IoMdClose } from 'react-icons/io';
 import { setWordsToSearch } from '../../../redux/actions/playerActions';
 
-function SearchSongs({ setWordsToSearch, player }) {
+function SearchSongs({ setWordsToSearch, player, isHydrating }) {
   const setWords = (e) => {
     if (typeof e !== 'string') return;
     setWordsToSearch(e.toLowerCase());
@@ -13,6 +13,16 @@ function SearchSongs({ setWordsToSearch, player }) {
   const handleDeleteText = () => {
     setWordsToSearch('');
   };
+
+  if (isHydrating) {
+    return (
+      <div className="w-full flex justify-center">
+        <div className="inputSearch w-full md:w-[90%] py-2 mx-auto px-2 text-textColor text-center md:text-left rounded-md font-open text-base">
+          Loading remaining songs…
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full  flex justify-center">
@@ -50,11 +60,14 @@ SearchSongs.propTypes = {
     searchWords: PropTypes.string.isRequired,
   }).isRequired,
   setWordsToSearch: PropTypes.func.isRequired,
+  isHydrating: PropTypes.bool.isRequired,
 };
 const mapDispatchToProps = {
   setWordsToSearch,
 };
 const mapStateToProps = (state) => ({
   player: state.player,
+  isHydrating: Boolean(state.player.isHydrating[state.player.currentActivePlaylistId]),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(SearchSongs);
+

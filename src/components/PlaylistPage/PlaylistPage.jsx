@@ -25,6 +25,7 @@ import {
   lastPlayedIndexPlaylistDetails,
   setPlaylistImage,
 } from '../../redux/actions/playlistDetailsActions';
+import { hydratePlaylistWindow } from '../../redux/actions/playlistSongsByIdActions';
 import PlayingRightNow from './PlayingRightNow/PlayingRightNow';
 import Navbar from '../Navbar/Navbar';
 import PlaylistInfo from './PlaylistInfo/PlaylistInfo';
@@ -52,6 +53,7 @@ function PlaylistPage({
   setProgress,
   setSeekTo,
   setPercentage,
+  hydratePlaylistWindow,
 }) {
   const { id } = useParams();
   let findPlaylistIndex = playlistDetails.findIndex(
@@ -73,6 +75,7 @@ function PlaylistPage({
         playlistSongsById[id][playlistDetails[findPlaylistIndex].currentIndex]
           .snippet.resourceId.videoId,
       );
+      hydratePlaylistWindow(id);
     } else {
       setSearchInput(id);
       return <Navigate to="/" />;
@@ -399,6 +402,7 @@ PlaylistPage.propTypes = {
   setProgress: PropTypes.func.isRequired,
   setSeekTo: PropTypes.func.isRequired,
   setPercentage: PropTypes.func.isRequired,
+  hydratePlaylistWindow: PropTypes.func.isRequired,
 };
 
 const mapDispatchToProps = {
@@ -417,6 +421,7 @@ const mapDispatchToProps = {
   setProgress,
   setSeekTo,
   setPercentage,
+  hydratePlaylistWindow,
 };
 
 const mapStateToProps = (state) => ({

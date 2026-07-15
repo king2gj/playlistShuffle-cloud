@@ -91,7 +91,11 @@ function VideoCard({
     if (player.searchWords.length >= 3) {
       const result = playlistSongsById[player.currentActivePlaylistId].reduce(
         (filtered, song, index) => {
-          if (song.snippet.videoOwnerChannelTitle === undefined) {
+          if (
+            song.snippet.title === null ||
+            song.snippet.videoOwnerChannelTitle === undefined ||
+            song.snippet.videoOwnerChannelTitle === null
+          ) {
             return filtered;
           }
           if (
@@ -225,7 +229,7 @@ function VideoCard({
             style={style}
             title={
               playlistSongsById[player.currentActivePlaylistId][index].snippet
-                .title
+                .title || 'Loading…'
             }
             // ref={refs[index]}
             id={`${
@@ -256,10 +260,16 @@ function VideoCard({
                   } font-normal w-full text-center md:text-left md:mx-4 md:truncate font-open`}
                 >
                   <p className="truncate group-hover:text-secondary ">
-                    {`${index + 1} - ${
-                      playlistSongsById[player.currentActivePlaylistId][index]
-                        .snippet.title
-                    }`}
+                    {playlistSongsById[player.currentActivePlaylistId][index]
+                      .snippet.title === null ? (
+                      <span className="italic text-gray-400">Loading…</span>
+                    ) : (
+                      `${index + 1} - ${
+                        playlistSongsById[player.currentActivePlaylistId][
+                          index
+                        ].snippet.title
+                      }`
+                    )}
                   </p>
                   <p
                     className={`${

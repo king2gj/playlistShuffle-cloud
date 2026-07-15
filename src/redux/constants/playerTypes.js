@@ -38,3 +38,5 @@ export const PLAYER_SEARCH_WORDS = 'player/searchWords';
 export const PLAYER_REVERSE_DURATION = 'player/videoCountdown';
 
 export const PLAYER_IS_DATA_SAVER_ACTIVE = 'player/isDataSaverActive';
+
+export const PLAYER_SET_PLAYLIST_HYDRATING = 'player/setPlaylistHydrating';

@@ -9,12 +9,29 @@ import PlaylistPage from './components/PlaylistPage/PlaylistPage';
 import './app.css';
 import ErrorPage from './components/ErrorPage/ErrorPage';
 import AboutPage from './components/AboutPage/AboutPage';
+import Login from './components/Auth/Login';
+import Register from './components/Auth/Register';
+import RequireAuth from './components/Auth/RequireAuth';
 import { setWordsToSearch } from './redux/actions/playerActions';
+import { restoreSession } from './redux/actions/authActions';
+import { loadPlaylistsFromServer } from './redux/actions/playlistDetailsActions';
 
-function App({ player, setWordsToSearch }) {
+function App({
+  player,
+  auth,
+  setWordsToSearch,
+  restoreSession,
+  loadPlaylistsFromServer,
+}) {
   useEffect(() => {
     setWordsToSearch('');
+    restoreSession();
   }, []);
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      loadPlaylistsFromServer();
+    }
+  }, [auth.isAuthenticated]);
   const ref = useRef(null);
   const coverImage = `https://i.ytimg.com/vi/${player.currentSong}/hqdefault.jpg`;
   useEffect(() => {
@@ -37,8 +54,26 @@ function App({ player, setWordsToSearch }) {
     <div ref={ref} id="app">
       <div className="backdrop-blur-sm">
         <Routes>
-          <Route exact path="/" element={<HomePage />} />
-          <Route exact path="/:id" element={<PlaylistPage />} />
+          <Route
+            exact
+            path="/"
+            element={(
+              <RequireAuth>
+                <HomePage />
+              </RequireAuth>
+            )}
+          />
+          <Route
+            exact
+            path="/:id"
+            element={(
+              <RequireAuth>
+                <PlaylistPage />
+              </RequireAuth>
+            )}
+          />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/error" element={<ErrorPage />} />
           <Route path="/about" element={<AboutPage />} />
         </Routes>
@@ -53,17 +88,26 @@ App.propTypes = {
     theme: PropTypes.string.isRequired,
     searchWords: PropTypes.string.isRequired,
   }).isRequired,
+  auth: PropTypes.shape({
+    isAuthenticated: PropTypes.bool.isRequired,
+  }).isRequired,
   setWordsToSearch: PropTypes.func.isRequired,
+  restoreSession: PropTypes.func.isRequired,
+  loadPlaylistsFromServer: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   player: state.player,
   playlistSongsById: state.playlistSongsById,
   playlistDetails: state.playlistDetails,
+  auth: state.auth,
 });
 
 const mapDispatchToProps = {
   setWordsToSearch,
+  restoreSession,
+  loadPlaylistsFromServer,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
+

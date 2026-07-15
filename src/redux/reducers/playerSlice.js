@@ -19,6 +19,7 @@ import {
   PLAYER_SEARCH_WORDS,
   PLAYER_REVERSE_DURATION,
   PLAYER_IS_DATA_SAVER_ACTIVE,
+  PLAYER_SET_PLAYLIST_HYDRATING,
 } from '../constants/playerTypes';
 
 const initialState = {
@@ -42,6 +43,7 @@ const initialState = {
   artist: '',
   videoCountdown: false,
   isDataSaverActive: false,
+  isHydrating: {},
 };
 
 export default function playerReducer(state = initialState, action) {
@@ -103,6 +105,15 @@ export default function playerReducer(state = initialState, action) {
     }
     case PLAYER_IS_DATA_SAVER_ACTIVE: {
       return { ...state, isDataSaverActive: action.payload }
+    }
+    case PLAYER_SET_PLAYLIST_HYDRATING: {
+      return {
+        ...state,
+        isHydrating: {
+          ...state.isHydrating,
+          [action.payload.playlistId]: action.payload.isHydrating,
+        },
+      };
     }
     default:
       return state;

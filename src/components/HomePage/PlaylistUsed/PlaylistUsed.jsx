@@ -1,5 +1,4 @@
 import React from 'react';
-import { TbArrowsSort } from 'react-icons/tb';
 import { TiDeleteOutline } from 'react-icons/ti';
 import { MdUpdate } from 'react-icons/md';
 import { connect } from 'react-redux';
@@ -16,6 +15,7 @@ import fetchPlaylistData from '../../../utils/fetchPlaylistData';
 import {
   addSongsByPlaylistID,
   removePlaylistSongsById,
+  hydratePlaylistWindow,
 } from '../../../redux/actions/playlistSongsByIdActions';
 import {
   setCurrentActivePlaylistId,
@@ -37,6 +37,7 @@ function PlaylistUsed({
   playlistSongsById,
   lastPlayedIndexPlaylistDetails,
   setIsPlLoading,
+  hydratePlaylistWindow,
 }) {
   const navigate = useNavigate();
 
@@ -53,6 +54,7 @@ function PlaylistUsed({
       playlistSongsById[id][playlistDetails[findPlaylistIndex].currentIndex]
         .snippet.resourceId.videoId,
     );
+    hydratePlaylistWindow(id);
     setIsPlLoading(false);
     navigate(`/${id}`);
   };
@@ -61,27 +63,6 @@ function PlaylistUsed({
     currentSong('');
     removePlaylistSongsById(id);
     deleteFromPlaylistDetails(id);
-  };
-
-  const handleSortClick = async (id) => {
-    const unShuffleArr = [];
-    unShuffleArr.push(...playlistSongsById[id]);
-    unShuffleArr.sort((a, b) => {
-      const result = a.snippet.position - b.snippet.position;
-      return result;
-    });
-    const playlistObject = {
-      id,
-      songs: unShuffleArr,
-    };
-    addSongsByPlaylistID(playlistObject);
-    currentSong(unShuffleArr[0].snippet.resourceId.videoId);
-    const lastPlayedObj = {
-      currentIndex: 0,
-      playlistId: id,
-    };
-    lastPlayedIndexPlaylistDetails(lastPlayedObj);
-    isShuffleActive(false);
   };
 
   const handleUpdate = async (id) => {
@@ -163,19 +144,6 @@ function PlaylistUsed({
         <div className="group relative w-max my-auto">
           <button
             type="button"
-            aria-label="sort playlist"
-            onClick={() => handleSortClick(element.playlistId)}
-            className="text-bgWhite dark:text-bgWhite mx-0.5 active:scale-110"
-          >
-            <TbArrowsSort size="24" />
-          </button>
-          <span className="pointer-events-none absolute -translate-x-2/4  left-1/4  -bottom-full w-max rounded bg-bgBlack px-2 py-1 text-sm font-medium text-bgWhite opacity-0 shadow transition-opacity duration-250 ease-in group-hover:opacity-100">
-            Sort by Default
-          </span>
-        </div>
-        <div className="group relative w-max my-auto">
-          <button
-            type="button"
             aria-label="delete playlist"
             className=" text-bgWhite dark:text-bgWhite mx-0.5 active:scale-110"
             onClick={() => handleDeleteFromPlaylist(element.playlistId)}
@@ -221,6 +189,7 @@ PlaylistUsed.propTypes = {
   isShuffleActive: PropTypes.func.isRequired,
   lastPlayedIndexPlaylistDetails: PropTypes.func.isRequired,
   setIsPlLoading: PropTypes.func.isRequired,
+  hydratePlaylistWindow: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
@@ -240,5 +209,6 @@ const mapDispatchToProps = {
   isShuffleActive,
   lastPlayedIndexPlaylistDetails,
   setIsPlLoading,
+  hydratePlaylistWindow,
 };
 export default connect(mapStateToProps, mapDispatchToProps)(PlaylistUsed);

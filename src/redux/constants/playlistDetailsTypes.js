@@ -1,6 +1,8 @@
 export const PLAYLIST_DETAILS_ADD_TO_PLAYLIST_DETAILS =
   "playlistDetails/addToPlaylistDetails";
 
+export const PLAYLIST_DETAILS_SET = "playlistDetails/add";
+
 export const PLAYLIST_DETAILS_DELETE_FROM_PLAYLIST_DETAILS =
   "playlistDetails/deleteFromPlaylistDetails";
 
