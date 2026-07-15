@@ -21,6 +21,9 @@ import {
   PLAYER_IS_DATA_SAVER_ACTIVE,
   PLAYER_SET_PLAYLIST_HYDRATING,
 } from '../constants/playerTypes';
+import { readStoredVolume } from '../../utils/storeVolume';
+
+const storedVolume = parseFloat(readStoredVolume());
 
 const initialState = {
   isPlLoading: false,
@@ -35,7 +38,7 @@ const initialState = {
   progress: 0,
   videoDuration: 0,
   videoPercentage: 0,
-  volume: 1,
+  volume: Number.isNaN(storedVolume) ? 1 : storedVolume,
   seeking: false,
   seekTo: 0,
   seekKeyboard: 0,

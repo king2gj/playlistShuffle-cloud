@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { BiVolumeMute, BiVolumeLow, BiVolumeFull } from 'react-icons/bi';
 import { isMutedActive, setVolume } from '../../../redux/actions/playerActions';
+import {writeStoredVolume} from "../../../utils/storeVolume";
 
 function VolumeManager({ player, isMutedActive, setVolume }) {
   const handleIconClick = () => {
@@ -15,6 +16,7 @@ function VolumeManager({ player, isMutedActive, setVolume }) {
 
   const handleChange = (e) => {
     isMutedActive(false);
+    writeStoredVolume(e.target.value);
     setVolume(parseFloat(e.target.value));
   };
 
