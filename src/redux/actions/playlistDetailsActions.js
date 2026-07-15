@@ -85,6 +85,32 @@ export const deleteFromPlaylistDetails = (playlistId) => (dispatch, getState) =>
     .catch((err) => console.error("Failed to delete playlist from server", err));
 };
 
+// Called after a client-side re-shuffle (see VideoCard.jsx) so the new song order actually
+// reaches the server and local cache — without this, the DB keeps the original import order
+// forever and other devices see the un-shuffled playlist.
+export const persistShuffledOrder = (playlistId, songs) => (dispatch, getState) => {
+  const state = getState();
+  const details = state.playlistDetails.find((p) => p.playlistId === playlistId);
+  if (!details) return;
+
+  const shuffledVideoIds = songs.map((song) => song.snippet.resourceId.videoId);
+
+  api
+    .post("/playlists", {
+      playlistId,
+      playlistName: details.playlistName,
+      playlistImage: details.playlistImage,
+      playlistEtag: details.playlistEtag,
+      playlistLength: details.playlistLength,
+      shuffledVideoIds,
+    })
+    // eslint-disable-next-line no-console
+    .catch((err) => console.error("Failed to save shuffled order to server", err));
+
+  const { userId } = state.auth;
+  writePlaylistCache(userId, playlistId, shuffledVideoIds, songs);
+};
+
 // Per-playlist debounce timers for the background PATCH below — keyed by playlistId so
 // skipping through several songs in one playlist doesn't fire a PATCH per keypress, while
 // still tracking each open playlist's own debounce independently.

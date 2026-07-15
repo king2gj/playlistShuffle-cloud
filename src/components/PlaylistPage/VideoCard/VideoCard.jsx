@@ -10,6 +10,7 @@ import {
 } from '../../../redux/actions/playerActions';
 import {
   lastPlayedIndexPlaylistDetails,
+  persistShuffledOrder,
   setPlaylistImage,
   setPlaylistLength,
 } from '../../../redux/actions/playlistDetailsActions';
@@ -23,6 +24,7 @@ function VideoCard({
   isShuffleActive,
   playlistDetails,
   lastPlayedIndexPlaylistDetails,
+  persistShuffledOrder,
   setPlaylistLength,
   setVideoDuration,
   width,
@@ -47,6 +49,7 @@ function VideoCard({
       songs: shuffleArr,
     };
     addSongsByPlaylistID(playlistObject);
+    persistShuffledOrder(player.currentActivePlaylistId, shuffleArr);
     currentSong(shuffleArr[0].snippet.resourceId.videoId);
     const lastPlayedObj = {
       currentIndex: 0,
@@ -328,6 +331,7 @@ VideoCard.propTypes = {
   addSongsByPlaylistID: PropTypes.func.isRequired,
   isShuffleActive: PropTypes.func.isRequired,
   lastPlayedIndexPlaylistDetails: PropTypes.func.isRequired,
+  persistShuffledOrder: PropTypes.func.isRequired,
   setPlaylistLength: PropTypes.func.isRequired,
   setVideoDuration: PropTypes.func.isRequired,
   setPlaylistImage: PropTypes.func.isRequired,
@@ -340,6 +344,7 @@ const mapDispatchToProps = {
   addSongsByPlaylistID,
   isShuffleActive,
   lastPlayedIndexPlaylistDetails,
+  persistShuffledOrder,
   setPlaylistLength,
   setVideoDuration,
   setPlaylistImage,
