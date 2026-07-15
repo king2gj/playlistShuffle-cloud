@@ -18,6 +18,7 @@ import {
   lastPlayedIndexPlaylistDetails,
   setPlaylistImage,
 } from '../../../redux/actions/playlistDetailsActions';
+import { UNAVAILABLE_VIDEO_TITLE } from '../../../redux/actions/playlistSongsByIdActions';
 import app from "../../../App";
 
 function Player({
@@ -134,7 +135,7 @@ function Player({
   const getTitleAndArtist = (title, ownerTitle) => {
     try {
       const joinedTitleAndOwnerTitle = [title, ownerTitle];
-      if (title === 'Private video') {
+      if (title === 'Private video' || title === UNAVAILABLE_VIDEO_TITLE) {
         return title;
       }
       if (joinedTitleAndOwnerTitle[0].includes(' - ')) {

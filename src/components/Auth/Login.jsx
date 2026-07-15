@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { loginUser } from '../../redux/actions/authActions';
 import HelmetHelper from '../Helmet/HelmetHelper';
 
@@ -11,13 +11,16 @@ function Login({ loginUser }) {
   const [errorReason, setErrorReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
       await loginUser(username, password);
-      navigate('/');
+      // Sends the user back to whichever protected page they were originally trying to
+      // reach (see RequireAuth.jsx) instead of always dropping them on the home page.
+      navigate(location.state?.from?.pathname || '/');
     } catch (error) {
       setErrorReason(error.response?.data?.error || 'Invalid username or password');
     }

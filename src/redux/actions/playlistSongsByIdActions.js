@@ -6,6 +6,13 @@ import { setPlaylistHydrating } from './playerActions';
 import hydrateSongMetadata from '../../utils/hydrateSongMetadata';
 import { writePlaylistCache } from '../../utils/playlistCache';
 
+// videos.list simply omits deleted/private videos from its response (unlike the old
+// playlistItems.list-based fetch, which returned a "Private video"/"Deleted video" title for
+// them) — falling back to this label lets the UI show something more useful than a
+// permanently-stuck "Loading…", and it doubles as the "already hydrated" marker so these
+// songs aren't re-requested from the YouTube API on every future hydration pass.
+export const UNAVAILABLE_VIDEO_TITLE = 'Video unavailable';
+
 export const addSongsByPlaylistID = (payload) => ({
   type: PLAYLIST_SONGS_ADD_SONGS_BY_PLAYLIST_ID,
   payload,
@@ -35,7 +42,15 @@ export const hydrateRemainingSongs = (playlistId) => async (dispatch, getState) 
     songs = songs.map((song, index) => {
       if (!chunkIndexes.includes(index)) return song;
       const metadata = metadataByVideoId[song.snippet.resourceId.videoId];
-      return metadata ? { ...song, snippet: { ...song.snippet, ...metadata } } : song;
+      if (metadata) return { ...song, snippet: { ...song.snippet, ...metadata } };
+      return {
+        ...song,
+        snippet: {
+          ...song.snippet,
+          title: UNAVAILABLE_VIDEO_TITLE,
+          videoOwnerChannelTitle: '',
+        },
+      };
     });
     dispatch(addSongsByPlaylistID({ id: playlistId, songs })); // merge each chunk in as it arrives
   }
@@ -64,8 +79,17 @@ export const hydratePlaylistWindow = (playlistId) => async (dispatch, getState) 
   const updatedSongs = songs.map((song, index) => {
     if (index < windowStart || index >= windowEnd) return song; // outside the window, leave untouched
     const metadata = metadataByVideoId[song.snippet.resourceId.videoId];
-    if (!metadata) return song; // video was deleted/private — keep the placeholder
-    return { ...song, snippet: { ...song.snippet, ...metadata } };
+    if (metadata) return { ...song, snippet: { ...song.snippet, ...metadata } };
+    // video was deleted/private — mark it as such instead of leaving title null forever,
+    // which would otherwise show as a permanently-stuck "Loading…" in the UI.
+    return {
+      ...song,
+      snippet: {
+        ...song.snippet,
+        title: UNAVAILABLE_VIDEO_TITLE,
+        videoOwnerChannelTitle: '',
+      },
+    };
   });
 
   dispatch(addSongsByPlaylistID({ id: playlistId, songs: updatedSongs })); // reuses the existing action
