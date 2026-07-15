@@ -57,49 +57,53 @@ function PlaylistPage({
   hydratePlaylistWindow,
 }) {
   const { id } = useParams();
-  let findPlaylistIndex = playlistDetails.findIndex(
-    (element) => element.playlistId === player.currentActivePlaylistId,
-  );
+  const ref = useRef(null);
+  const isDocumentVisible = useDocumentVisibility();
+
   useEffect(() => {
     setWordsToSearch('');
   }, []);
-  const isDocumentVisible = useDocumentVisibility();
 
-  if (player.currentActivePlaylistId !== id) {
-    const doesPlExist = playlistDetails.findIndex(
-      (element) => element.playlistId === id,
+  const doesPlExist = playlistDetails.findIndex(
+    (element) => element.playlistId === id,
+  );
+  const playlistExists = doesPlExist !== -1;
+
+  // Activates the requested playlist once it's found in `playlistDetails` — split out into
+  // its own effect (rather than dispatching directly during render, as this used to) so every
+  // render of this component calls the exact same hooks in the exact same order. Mixing
+  // conditional `return`s in between hook calls is what caused React error #310 (mismatched
+  // hook count between renders) when a direct/refreshed navigation landed here before
+  // `loadPlaylistsFromServer` had resolved.
+  useEffect(() => {
+    if (!playlistExists || player.currentActivePlaylistId === id) return;
+    setCurrentActivePlaylistId(id);
+    currentSong(
+      playlistSongsById[id][playlistDetails[doesPlExist].currentIndex].snippet
+        .resourceId.videoId,
     );
-    if (doesPlExist !== -1) {
-      setCurrentActivePlaylistId(id);
-      findPlaylistIndex = doesPlExist;
-      currentSong(
-        playlistSongsById[id][playlistDetails[findPlaylistIndex].currentIndex]
-          .snippet.resourceId.videoId,
-      );
-      hydratePlaylistWindow(id);
-    } else if (auth.playlistsLoaded) {
-      // Playlists have finished loading from the server and this id genuinely isn't one
-      // of them — safe to bounce home.
-      setSearchInput(id);
-      return <Navigate to="/" />;
-    } else {
-      // A direct navigation/page refresh lands here before `loadPlaylistsFromServer`
-      // (dispatched from App.jsx) has resolved — wait rather than redirecting home, since
-      // the playlist may well exist once the fetch completes.
-      return null;
-    }
-  }
-  const ref = useRef(null);
-
-  const currentVideoName =
-    playlistSongsById[player.currentActivePlaylistId][
-      playlistDetails[findPlaylistIndex].currentIndex
-    ].snippet.title;
+    hydratePlaylistWindow(id);
+  }, [playlistExists, id, player.currentActivePlaylistId]);
 
   useEffect(() => {
-    const findPlaylistIndex = playlistDetails.findIndex(
-      (element) => element.playlistId === player.currentActivePlaylistId,
-    );
+    if (!playlistExists && auth.playlistsLoaded) {
+      setSearchInput(id);
+    }
+  }, [playlistExists, auth.playlistsLoaded, id]);
+
+  const findPlaylistIndex = playlistDetails.findIndex(
+    (element) => element.playlistId === player.currentActivePlaylistId,
+  );
+  const isReady = player.currentActivePlaylistId === id && findPlaylistIndex !== -1;
+
+  const currentVideoName = isReady
+    ? playlistSongsById[player.currentActivePlaylistId][
+        playlistDetails[findPlaylistIndex].currentIndex
+      ].snippet.title
+    : null;
+
+  useEffect(() => {
+    if (!isReady) return undefined;
     const currIndex = playlistDetails[findPlaylistIndex].currentIndex;
     const handleClick = (e) => {
       if (e.target.nodeName.toLowerCase() !== 'input') {
@@ -328,7 +332,20 @@ function PlaylistPage({
     return () => {
       element.removeEventListener('keydown', handleClick, { passive: true });
     };
-  }, [player]);
+  }, [player, isReady]);
+
+  if (!playlistExists && auth.playlistsLoaded) {
+    // Playlists have finished loading from the server and this id genuinely isn't one of
+    // them — safe to bounce home.
+    return <Navigate to="/" />;
+  }
+
+  if (!isReady) {
+    // Either the playlist is still being activated (see the effect above), or a direct
+    // navigation/page refresh landed here before `loadPlaylistsFromServer` has resolved —
+    // wait rather than rendering with data that isn't there yet.
+    return null;
+  }
 
   return (
     <div
