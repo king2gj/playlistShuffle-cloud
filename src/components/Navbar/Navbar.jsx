@@ -16,7 +16,7 @@ import {
   isDataSaverActive,
 } from '../../redux/actions/playerActions';
 import setSearchInput from '../../redux/actions/homepageActions';
-import {readDataSaverPreferences} from "../../utils/dataSaverPreference";
+import { readDataSaverPreferences, writeDataSaverPreference } from "../../utils/dataSaverPreference";
 
 function Navbar({
   isPlaying,
@@ -84,13 +84,18 @@ function Navbar({
     }
   };
 
+  const handleClickDataSaver = () => {
+    const nextValue = !player.isDataSaverActive;
+    writeDataSaverPreference(nextValue);
+    isDataSaverActive(nextValue);
+  };
+
   return (
     <div className="w-full px-1 ">
       <div className="flex justify-between w-full mx-1 my-1">
         <button type="button" onClick={handleClickHome}>
           <h1
             className="text-lg font-bold text-left cursor-pointer navbar sm:text-2xl font-open text-textColor"
-            cursor="pointer"
           >
             Shuffle Playlist{' '}
           </h1>
