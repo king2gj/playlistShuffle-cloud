@@ -38,7 +38,7 @@ function Login({ loginUser }) {
           <p className="text-red text-center mb-2 font-open">{errorReason}</p>
         ) : null}
         <input
-          className="inputSearch w-full mb-2 py-2 px-2 rounded-md font-open shadow-lg focus:outline-none focus:shadow-outline"
+          className="inputSearch w-full mb-2 py-2 px-2 rounded-md font-open shadow-lg focus:outline-none focus:shadow-outline text-black"
           type="text"
           placeholder="Username"
           required
@@ -46,7 +46,7 @@ function Login({ loginUser }) {
           onChange={(e) => setUsername(e.target.value)}
         />
         <input
-          className="inputSearch w-full mb-4 py-2 px-2 rounded-md font-open shadow-lg focus:outline-none focus:shadow-outline"
+          className="inputSearch w-full mb-4 py-2 px-2 rounded-md font-open shadow-lg focus:outline-none focus:shadow-outline text-black"
           type="password"
           placeholder="Password"
           required
