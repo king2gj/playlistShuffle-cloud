@@ -37,6 +37,7 @@ import SearchSongs from './SearchSongs/SearchSongs';
 function PlaylistPage({
   isPlaying,
   player,
+  auth,
   isLoopActive,
   isShuffleActive,
   currentSong,
@@ -76,9 +77,16 @@ function PlaylistPage({
           .snippet.resourceId.videoId,
       );
       hydratePlaylistWindow(id);
-    } else {
+    } else if (auth.playlistsLoaded) {
+      // Playlists have finished loading from the server and this id genuinely isn't one
+      // of them — safe to bounce home.
       setSearchInput(id);
       return <Navigate to="/" />;
+    } else {
+      // A direct navigation/page refresh lands here before `loadPlaylistsFromServer`
+      // (dispatched from App.jsx) has resolved — wait rather than redirecting home, since
+      // the playlist may well exist once the fetch completes.
+      return null;
     }
   }
   const ref = useRef(null);
@@ -376,6 +384,9 @@ PlaylistPage.propTypes = {
     progress: PropTypes.number.isRequired,
     videoDuration: PropTypes.number.isRequired,
   }).isRequired,
+  auth: PropTypes.shape({
+    playlistsLoaded: PropTypes.bool.isRequired,
+  }).isRequired,
 
   isLoopActive: PropTypes.func.isRequired,
   isShuffleActive: PropTypes.func.isRequired,
@@ -428,6 +439,7 @@ const mapStateToProps = (state) => ({
   player: state.player,
   playlistSongsById: state.playlistSongsById,
   playlistDetails: state.playlistDetails,
+  auth: state.auth,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PlaylistPage);

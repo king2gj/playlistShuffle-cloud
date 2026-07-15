@@ -1,10 +1,11 @@
-import { AUTH_LOG_IN, AUTH_LOG_OUT } from '../constants/authTypes';
+import { AUTH_LOG_IN, AUTH_LOG_OUT, AUTH_PLAYLISTS_LOADED } from '../constants/authTypes';
 
 const initialState = {
   token: null,
   username: null,
   userId: null,
   isAuthenticated: false,
+  playlistsLoaded: false,
 };
 
 export default function authReducer(state = initialState, action) {
@@ -20,6 +21,9 @@ export default function authReducer(state = initialState, action) {
     }
     case AUTH_LOG_OUT: {
       return initialState;
+    }
+    case AUTH_PLAYLISTS_LOADED: {
+      return { ...state, playlistsLoaded: action.payload };
     }
     default:
       return state;

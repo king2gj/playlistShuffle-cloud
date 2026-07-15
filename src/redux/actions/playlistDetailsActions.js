@@ -7,6 +7,7 @@ import {
   PLAYLIST_DETAILS_LAST_PLAYED_INDEX,
   PLAYLIST_DETAILS_LENGTH,
 } from "../constants/playlistDetailsTypes";
+import { AUTH_PLAYLISTS_LOADED } from "../constants/authTypes";
 import api from "../../utils/api";
 import {
   addSongsByPlaylistID,
@@ -140,45 +141,51 @@ export const lastPlayedIndexPlaylistDetails = (payload) => (dispatch) => {
 // app start (see App.jsx) to fill in `playlistDetails` / `playlistSongsById` from the
 // database for whichever user is logged in.
 export const loadPlaylistsFromServer = () => async (dispatch, getState) => {
-  const { data: playlists } = await api.get("/playlists");
-  const { userId } = getState().auth;
+  try {
+    const { data: playlists } = await api.get("/playlists");
+    const { userId } = getState().auth;
 
-  dispatch(
-    setPlaylistDetails(
-      playlists.map((playlist) => ({
-        playlistName: playlist.playlist_name,
-        playlistId: playlist.playlist_id,
-        playlistImage: playlist.playlist_image,
-        playlistEtag: playlist.playlist_etag,
-        playlistLength: playlist.playlist_length,
-        currentIndex: playlist.current_index,
-      })),
-    ),
-  );
+    dispatch(
+      setPlaylistDetails(
+        playlists.map((playlist) => ({
+          playlistName: playlist.playlist_name,
+          playlistId: playlist.playlist_id,
+          playlistImage: playlist.playlist_image,
+          playlistEtag: playlist.playlist_etag,
+          playlistLength: playlist.playlist_length,
+          currentIndex: playlist.current_index,
+        })),
+      ),
+    );
 
-  playlists.forEach((playlist) => {
-    const dbShuffledVideoIds = playlist.shuffled_video_ids;
-    const cache = readPlaylistCache(userId, playlist.playlist_id);
-    const cacheIsFresh =
-      cache &&
-      cache.shuffledVideoIds.length === dbShuffledVideoIds.length &&
-      cache.shuffledVideoIds.every((id, index) => id === dbShuffledVideoIds[index]); // order-sensitive
+    playlists.forEach((playlist) => {
+      const dbShuffledVideoIds = playlist.shuffled_video_ids;
+      const cache = readPlaylistCache(userId, playlist.playlist_id);
+      const cacheIsFresh =
+        cache &&
+        cache.shuffledVideoIds.length === dbShuffledVideoIds.length &&
+        cache.shuffledVideoIds.every((id, index) => id === dbShuffledVideoIds[index]); // order-sensitive
 
-    if (cacheIsFresh) {
-      // Cache hit — reuse the cached, already-hydrated song objects. Zero YouTube API calls.
-      dispatch(addSongsByPlaylistID({ id: playlist.playlist_id, songs: cache.songs }));
-    } else {
-      // Cache miss (first time on this browser, or the playlist was re-shuffled/re-added
-      // elsewhere) — fall back to the placeholder + windowed hydration flow.
-      const placeholderSongs = dbShuffledVideoIds.map((videoId) => ({
-        snippet: {
-          title: null, // not hydrated yet
-          videoOwnerChannelTitle: null,
-          resourceId: { videoId },
-        },
-      }));
-      dispatch(addSongsByPlaylistID({ id: playlist.playlist_id, songs: placeholderSongs }));
-      dispatch(hydratePlaylistWindow(playlist.playlist_id));
-    }
-  });
+      if (cacheIsFresh) {
+        // Cache hit — reuse the cached, already-hydrated song objects. Zero YouTube API calls.
+        dispatch(addSongsByPlaylistID({ id: playlist.playlist_id, songs: cache.songs }));
+      } else {
+        // Cache miss (first time on this browser, or the playlist was re-shuffled/re-added
+        // elsewhere) — fall back to the placeholder + windowed hydration flow.
+        const placeholderSongs = dbShuffledVideoIds.map((videoId) => ({
+          snippet: {
+            title: null, // not hydrated yet
+            videoOwnerChannelTitle: null,
+            resourceId: { videoId },
+          },
+        }));
+        dispatch(addSongsByPlaylistID({ id: playlist.playlist_id, songs: placeholderSongs }));
+        dispatch(hydratePlaylistWindow(playlist.playlist_id));
+      }
+    });
+  } finally {
+    // Always flips, even on failure, so a direct/refresh navigation to a playlist page
+    // doesn't get stuck waiting forever — see PlaylistPage.jsx's use of this flag.
+    dispatch({ type: AUTH_PLAYLISTS_LOADED, payload: true });
+  }
 };

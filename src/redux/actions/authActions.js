@@ -1,4 +1,4 @@
-import { AUTH_LOG_IN, AUTH_LOG_OUT } from '../constants/authTypes';
+import { AUTH_LOG_IN, AUTH_LOG_OUT, AUTH_PLAYLISTS_LOADED } from '../constants/authTypes';
 import api, { decodeJwtPayload } from '../../utils/api';
 import { removePlaylistSongsById } from './playlistSongsByIdActions';
 import { setPlaylistDetails } from './playlistDetailsActions';
@@ -6,6 +6,11 @@ import { setPlaylistDetails } from './playlistDetailsActions';
 export const logIn = (payload) => ({ type: AUTH_LOG_IN, payload });
 
 export const logOut = () => ({ type: AUTH_LOG_OUT });
+
+export const setPlaylistsLoaded = (payload) => ({
+  type: AUTH_PLAYLISTS_LOADED,
+  payload,
+});
 
 const logInFromToken = (dispatch, token, username) => {
   localStorage.setItem('jwt', token);
