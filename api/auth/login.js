@@ -1,6 +1,6 @@
-import { sql } from "@vercel/postgres";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import sql from "../_lib/db";
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).end();
@@ -9,7 +9,7 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'username and password required' });
     }
     try {
-        const { rows } = await sql`
+        const rows = await sql`
             SELECT id, password_hash
             FROM users
             WHERE username = ${username}

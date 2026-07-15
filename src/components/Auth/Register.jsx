@@ -19,7 +19,7 @@ function Register({ registerUser }) {
       await registerUser(username, password);
       navigate('/');
     } catch (error) {
-      setErrorReason('Username already taken');
+      setErrorReason(error.response?.data?.error || 'Username already taken');
     }
     setIsSubmitting(false);
   };
@@ -35,7 +35,7 @@ function Register({ registerUser }) {
           Register
         </h1>
         {errorReason ? (
-          <p className="text-red text-center mb-2 font-open">{errorReason}</p>
+          <p className="text-red bg-backColor/90 rounded px-2 py-1 text-center mb-2 font-open font-semibold">{errorReason}</p>
         ) : null}
         <input
           className="inputSearch w-full mb-2 py-2 px-2 rounded-md font-open shadow-lg focus:outline-none focus:shadow-outline text-black"

@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { sql } from '@vercel/postgres';
+import sql from '../_lib/db';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).end();
@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     }
     const passwordHash = await bcrypt.hash(password, 10);
     try {
-        const { rows } = await sql`
+        const rows = await sql`
             INSERT INTO users (username, password_hash)
             VALUES (${username}, ${passwordHash})
             RETURNING id

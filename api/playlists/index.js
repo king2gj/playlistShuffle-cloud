@@ -1,4 +1,4 @@
-import { sql } from "@vercel/postgres";
+import sql from "../_lib/db";
 import requireAuth from "../_lib/requireAuth";
 
 export default async function handler(req, res) {
@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     if (!decoded) return undefined;
 
     if (req.method === 'GET') {
-        const { rows } = await sql`
+        const rows = await sql`
             SELECT playlist_id, playlist_name, playlist_image, playlist_etag,
                    playlist_length, current_index, shuffled_video_ids
             FROM playlists WHERE user_id = ${decoded.userId}

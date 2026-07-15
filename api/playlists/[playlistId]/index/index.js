@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres';
+import sql from '../../../_lib/db';
 import requireAuth from '../../../_lib/requireAuth';
 
 export default async function handler(req, res) {
