@@ -18,6 +18,7 @@ import {
   lastPlayedIndexPlaylistDetails,
   setPlaylistImage,
 } from '../../../redux/actions/playlistDetailsActions';
+import app from "../../../App";
 
 function Player({
   player,
@@ -43,6 +44,14 @@ function Player({
     }
     setSeekKeyboard(null);
   }, [player.seekKeyboard]);
+
+  const applyDataSaverQualityHint = () => {
+    if (!player.isDataSaverActive) return;
+    const internalPlayer = playerRef.current?.getInternalPlayer();
+    if (internalPlayer && typeof internalPlayer.setPlaybackQuality === 'function') {
+      internalPlayer.setPlaybackQuality('small');
+    }
+  }
 
   const findPlaylistIndex = playlistDetails.findIndex(
     (element) => element.playlistId === player.currentActivePlaylistId,
@@ -101,6 +110,7 @@ function Player({
 
   const handlePlay = () => {
     isPlaying(true);
+    applyDataSaverQualityHint();
   };
   const handlePause = () => {
     isPlaying(false);
@@ -161,6 +171,7 @@ function Player({
       playlistImage: `https://i.ytimg.com/vi/${player.currentSong}/mqdefault.jpg`,
     };
     setPlaylistImage(obj);
+    applyDataSaverQualityHint();
   };
   const getPercentage = (a, b) => {
     const trimmedA = Math.ceil(a);
@@ -174,7 +185,11 @@ function Player({
   };
 
   return (
-    <div className="player h-full aspect-auto md:w-full md:mx-2 md:h-full">
+    <div className={
+      player.isDataSaverActive
+          ? 'player absolute opacity-0 pointer-events-none h-1 w-1 overflow-hidden'
+          : 'player h-full aspect-auto md:w-full md:mx-2 md:h-full'
+    }>
       <ReactPlayer
         playing={player.isPlaying}
         ref={playerRef}
@@ -195,9 +210,9 @@ function Player({
         onReady={() => handleReady()}
         onEnded={() => handleEnd()}
         volume={player.volume}
-        width="100%"
-        height="100%"
-        controls
+        controls={!player.isDataSaverActive}
+        width={player.isDataSaverActive ? '2px' : '100%'}
+        height={player.isDataSaverActive ? '2px' : '100%'}
         loop={player.isLoopActive}
         url={`https://www.youtube.com/embed/${player.currentSong}`}
       />
@@ -208,6 +223,7 @@ function Player({
 Player.propTypes = {
   player: PropTypes.shape({
     isPlaying: PropTypes.bool.isRequired,
+    isDataSaverActive: PropTypes.bool.isRequired,
     currentSong: PropTypes.string.isRequired,
     isShuffleActive: PropTypes.bool.isRequired,
     isLoopActive: PropTypes.bool.isRequired,

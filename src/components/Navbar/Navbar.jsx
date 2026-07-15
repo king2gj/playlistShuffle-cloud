@@ -2,6 +2,7 @@ import React, { memo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { BsFillMoonFill, BsFillSunFill, BsImageFill } from 'react-icons/bs';
+import { MdDataSaverOn, MdDataSaverOff } from 'react-icons/md';
 import PropTypes from 'prop-types';
 import {
   isPlaying,
@@ -12,8 +13,10 @@ import {
   setArtist,
   setWordsToSearch,
   setIsPlLoading,
+  isDataSaverActive,
 } from '../../redux/actions/playerActions';
 import setSearchInput from '../../redux/actions/homepageActions';
+import {readDataSaverPreferences} from "../../utils/dataSaverPreference";
 
 function Navbar({
   isPlaying,
@@ -57,6 +60,7 @@ function Navbar({
       document.documentElement.classList.remove('dark');
       document.documentElement.classList.add('image');
     }
+    isDataSaverActive(readDataSaverPreferences());
   }, []);
 
   const handleClickTheme = () => {
@@ -90,6 +94,24 @@ function Navbar({
           >
             Shuffle Playlist{' '}
           </h1>
+        </button>
+        <button
+            type="button"
+            aria-label={player.isDataSaverActive ? 'disable data saver mode' : 'enable data saver mode'}
+            className="p-[0.25rem] md:p-[0.50rem] mx-2 md:mx-0"
+            onClick={handleClickDataSaver}
+        >
+          {player.isDataSaverActive ? (
+              <MdDataSaverOn
+                  className="text-primary hover:text-secondary drop-shadow-svgShadow dark:drop-shadow-svgShadowDarkMode active:scale-110"
+                  size={28}
+              />
+          ) : (
+              <MdDataSaverOff
+                  className="text-primary hover:text-secondary drop-shadow-svgShadow dark:drop-shadow-svgShadowDarkMode active:scale-110"
+                  size={28}
+              />
+          )}
         </button>
         <div className="flex flex-row mr-2">
           {player.theme === 'image' && (
@@ -182,6 +204,7 @@ function Navbar({
 Navbar.propTypes = {
   player: PropTypes.shape({
     theme: PropTypes.string.isRequired,
+    isDataSaverActive: PropTypes.bool.isRequired,
   }).isRequired,
   isPlaying: PropTypes.func.isRequired,
   isShuffleActive: PropTypes.func.isRequired,
@@ -197,6 +220,7 @@ Navbar.propTypes = {
 const mapDispatchToProps = {
   isPlaying,
   isShuffleActive,
+  isDataSaverActive,
   setCurrentActivePlaylistId,
   setTheme,
   setTitle,

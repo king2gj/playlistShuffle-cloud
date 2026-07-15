@@ -18,6 +18,7 @@ import {
   PLAYER_IS_PL_LOADING,
   PLAYER_SEARCH_WORDS,
   PLAYER_REVERSE_DURATION,
+  PLAYER_IS_DATA_SAVER_ACTIVE,
 } from '../constants/playerTypes';
 
 const initialState = {
@@ -40,6 +41,7 @@ const initialState = {
   title: '',
   artist: '',
   videoCountdown: false,
+  isDataSaverActive: false,
 };
 
 export default function playerReducer(state = initialState, action) {
@@ -98,6 +100,9 @@ export default function playerReducer(state = initialState, action) {
     }
     case PLAYER_REVERSE_DURATION: {
       return { ...state, videoCountdown: action.payload};
+    }
+    case PLAYER_IS_DATA_SAVER_ACTIVE: {
+      return { ...state, isDataSaverActive: action.payload }
     }
     default:
       return state;

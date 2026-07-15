@@ -17,7 +17,7 @@ import {
   PLAYER_SEEK_KEYBOARD,
   PLAYER_IS_PL_LOADING,
   PLAYER_SEARCH_WORDS,
-  PLAYER_REVERSE_DURATION,
+  PLAYER_REVERSE_DURATION, PLAYER_IS_DATA_SAVER_ACTIVE,
 } from '../constants/playerTypes';
 
 export const isPlaying = (payload) => ({ type: PLAYER_IS_PLAYING, payload });
@@ -109,5 +109,10 @@ export const setWordsToSearch = (payload) => ({
 
 export const setVideoCountdown = (payload) => ({
   type: PLAYER_REVERSE_DURATION,
+  payload,
+});
+
+export const isDataSaverActive = (payload) => ({
+  type: PLAYER_IS_DATA_SAVER_ACTIVE,
   payload,
 });

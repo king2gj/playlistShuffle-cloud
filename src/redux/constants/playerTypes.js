@@ -36,3 +36,5 @@ export const PLAYER_IS_PL_LOADING = 'player/isPlLoading';
 export const PLAYER_SEARCH_WORDS = 'player/searchWords';
 
 export const PLAYER_REVERSE_DURATION = 'player/videoCountdown';
+
+export const PLAYER_IS_DATA_SAVER_ACTIVE = 'player/isDataSaverActive';
