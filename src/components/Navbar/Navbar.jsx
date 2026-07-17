@@ -18,6 +18,7 @@ import {
 import setSearchInput from '../../redux/actions/homepageActions';
 import { logoutUser } from '../../redux/actions/authActions';
 import { readDataSaverPreferences, writeDataSaverPreference } from "../../utils/dataSaverPreference";
+import {readStoredTheme, writeStoredTheme} from "../../utils/storeTheme";
 
 function Navbar({
   isPlaying,
@@ -62,18 +63,21 @@ function Navbar({
       document.documentElement.classList.remove('light');
       document.documentElement.classList.add('dark');
       setTheme('dark');
+      writeStoredTheme('dark');
     }
     if (player.theme === 'dark') {
       document.documentElement.classList.remove('dark');
       document.documentElement.classList.remove('light');
       document.documentElement.classList.add('image');
       setTheme('image');
+      writeStoredTheme('image');
     }
     if (player.theme === 'image') {
       document.documentElement.classList.remove('image');
       document.documentElement.classList.remove('dark');
       document.documentElement.classList.add('light');
       setTheme('light');
+      writeStoredTheme('light');
     }
   };
 

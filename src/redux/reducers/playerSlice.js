@@ -22,13 +22,15 @@ import {
   PLAYER_SET_PLAYLIST_HYDRATING,
 } from '../constants/playerTypes';
 import { readStoredVolume } from '../../utils/storeVolume';
+import {readStoredTheme} from "../../utils/storeTheme";
 
 const storedVolume = parseFloat(readStoredVolume());
+const storedTheme = readStoredTheme();
 
 const initialState = {
   isPlLoading: false,
   isPlaying: false,
-  theme: 'image',
+  theme: storedTheme === null ? 'image' : storedTheme,
   currentSong: '',
   isShuffleActive: false,
   isLoopActive: false,
