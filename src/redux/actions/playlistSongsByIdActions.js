@@ -26,44 +26,55 @@ export const removePlaylistSongsById = (payload) => ({
 export const hydrateRemainingSongs = (playlistId) => async (dispatch, getState) => {
   dispatch(setPlaylistHydrating({ playlistId, isHydrating: true })); // new player-slice flag
 
-  let songs = getState().playlistSongsById[playlistId];
-  const unhydratedIndexes = songs
-    .map((song, index) => (song.snippet.title === null ? index : null))
-    .filter((index) => index !== null);
+  try {
+    let songs = getState().playlistSongsById[playlistId];
+    const unhydratedIndexes = songs
+      .map((song, index) => (song.snippet.title === null ? index : null))
+      .filter((index) => index !== null);
 
-  for (let i = 0; i < unhydratedIndexes.length; i += 50) {
-    const chunkIndexes = unhydratedIndexes.slice(i, i + 50);
-    // eslint-disable-next-line no-loop-func -- reads the current `songs` for this chunk only
-    const chunkVideoIds = chunkIndexes.map((index) => songs[index].snippet.resourceId.videoId);
-    // eslint-disable-next-line no-await-in-loop -- intentionally sequential, chunk by chunk
-    const metadataByVideoId = await hydrateSongMetadata(chunkVideoIds);
+    for (let i = 0; i < unhydratedIndexes.length; i += 50) {
+      const chunkIndexes = unhydratedIndexes.slice(i, i + 50);
+      // eslint-disable-next-line no-loop-func -- reads the current `songs` for this chunk only
+      const chunkVideoIds = chunkIndexes.map((index) => songs[index].snippet.resourceId.videoId);
+      // eslint-disable-next-line no-await-in-loop -- intentionally sequential, chunk by chunk
+      const metadataByVideoId = await hydrateSongMetadata(chunkVideoIds);
 
-    // eslint-disable-next-line no-loop-func -- reassigning `songs` for use by the next chunk is intentional
-    songs = songs.map((song, index) => {
-      if (!chunkIndexes.includes(index)) return song;
-      const metadata = metadataByVideoId[song.snippet.resourceId.videoId];
-      if (metadata) return { ...song, snippet: { ...song.snippet, ...metadata } };
-      return {
-        ...song,
-        snippet: {
-          ...song.snippet,
-          title: UNAVAILABLE_VIDEO_TITLE,
-          videoOwnerChannelTitle: '',
-        },
-      };
-    });
-    dispatch(addSongsByPlaylistID({ id: playlistId, songs })); // merge each chunk in as it arrives
+      // eslint-disable-next-line no-loop-func -- reassigning `songs` for use by the next chunk is intentional
+      songs = songs.map((song, index) => {
+        if (!chunkIndexes.includes(index)) return song;
+        const metadata = metadataByVideoId[song.snippet.resourceId.videoId];
+        if (metadata) return { ...song, snippet: { ...song.snippet, ...metadata } };
+        return {
+          ...song,
+          snippet: {
+            ...song.snippet,
+            title: UNAVAILABLE_VIDEO_TITLE,
+            videoOwnerChannelTitle: '',
+          },
+        };
+      });
+      dispatch(addSongsByPlaylistID({ id: playlistId, songs })); // merge each chunk in as it arrives
+    }
+
+    const { userId } = getState().auth;
+    const shuffledVideoIds = songs.map((song) => song.snippet.resourceId.videoId);
+    writePlaylistCache(userId, playlistId, shuffledVideoIds, songs);
+  } finally {
+    // Always flips, even on failure (e.g. a chunk request throws) — otherwise the
+    // hydratePlaylistWindow concurrency guard below would permanently block this
+    // playlist from ever being (re-)hydrated again for the rest of the session.
+    dispatch(setPlaylistHydrating({ playlistId, isHydrating: false }));
   }
-
-  dispatch(setPlaylistHydrating({ playlistId, isHydrating: false }));
-
-  const { userId } = getState().auth;
-  const shuffledVideoIds = songs.map((song) => song.snippet.resourceId.videoId);
-  writePlaylistCache(userId, playlistId, shuffledVideoIds, songs);
 };
 
 export const hydratePlaylistWindow = (playlistId) => async (dispatch, getState) => {
   const state = getState();
+  // Guards against duplicate/overlapping hydration passes for the same playlist — e.g. the
+  // PlaylistPage mount effect and the PlaylistUsed click handler both firing for the same
+  // playlistId, or a user double-clicking before the first pass finishes. Without this, two
+  // full passes race and every unhydrated song gets requested from the YouTube API twice.
+  if (state.player.isHydrating[playlistId]) return;
+
   const songs = state.playlistSongsById[playlistId];
   const { currentIndex } = state.playlistDetails.find((p) => p.playlistId === playlistId);
 
@@ -73,25 +84,37 @@ export const hydratePlaylistWindow = (playlistId) => async (dispatch, getState) 
   const alreadyHydrated = windowSongs.every((s) => s.snippet.title !== null);
   if (alreadyHydrated) return; // nothing to do — e.g. a freshly-added playlist is hydrated already
 
-  const videoIds = windowSongs.map((s) => s.snippet.resourceId.videoId);
-  const metadataByVideoId = await hydrateSongMetadata(videoIds);
+  // Set synchronously (before the first `await`) so a second call made in the same tick —
+  // before this pass has dispatched anything — still sees the flag and bails out above.
+  dispatch(setPlaylistHydrating({ playlistId, isHydrating: true }));
 
-  const updatedSongs = songs.map((song, index) => {
-    if (index < windowStart || index >= windowEnd) return song; // outside the window, leave untouched
-    const metadata = metadataByVideoId[song.snippet.resourceId.videoId];
-    if (metadata) return { ...song, snippet: { ...song.snippet, ...metadata } };
-    // video was deleted/private — mark it as such instead of leaving title null forever,
-    // which would otherwise show as a permanently-stuck "Loading…" in the UI.
-    return {
-      ...song,
-      snippet: {
-        ...song.snippet,
-        title: UNAVAILABLE_VIDEO_TITLE,
-        videoOwnerChannelTitle: '',
-      },
-    };
-  });
+  try {
+    const videoIds = windowSongs.map((s) => s.snippet.resourceId.videoId);
+    const metadataByVideoId = await hydrateSongMetadata(videoIds);
 
-  dispatch(addSongsByPlaylistID({ id: playlistId, songs: updatedSongs })); // reuses the existing action
-  dispatch(hydrateRemainingSongs(playlistId)); // kick off background hydration for the rest
+    const updatedSongs = songs.map((song, index) => {
+      if (index < windowStart || index >= windowEnd) return song; // outside the window, leave untouched
+      const metadata = metadataByVideoId[song.snippet.resourceId.videoId];
+      if (metadata) return { ...song, snippet: { ...song.snippet, ...metadata } };
+      // video was deleted/private — mark it as such instead of leaving title null forever,
+      // which would otherwise show as a permanently-stuck "Loading…" in the UI.
+      return {
+        ...song,
+        snippet: {
+          ...song.snippet,
+          title: UNAVAILABLE_VIDEO_TITLE,
+          videoOwnerChannelTitle: '',
+        },
+      };
+    });
+
+    dispatch(addSongsByPlaylistID({ id: playlistId, songs: updatedSongs })); // reuses the existing action
+  } catch (err) {
+    // The window fetch failed — reset the flag ourselves since hydrateRemainingSongs (which
+    // would otherwise own turning it back off) never gets dispatched in this case.
+    dispatch(setPlaylistHydrating({ playlistId, isHydrating: false }));
+    throw err;
+  }
+
+  dispatch(hydrateRemainingSongs(playlistId)); // kick off background hydration for the rest; owns flipping the flag back off
 };

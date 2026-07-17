@@ -11,7 +11,6 @@ import { AUTH_PLAYLISTS_LOADED } from "../constants/authTypes";
 import api from "../../utils/api";
 import {
   addSongsByPlaylistID,
-  hydratePlaylistWindow,
 } from "./playlistSongsByIdActions";
 import {
   readPlaylistCache,
@@ -177,7 +176,10 @@ export const loadPlaylistsFromServer = () => async (dispatch, getState) => {
           },
         }));
         dispatch(addSongsByPlaylistID({ id: playlist.playlist_id, songs: placeholderSongs }));
-        dispatch(hydratePlaylistWindow(playlist.playlist_id));
+        // Intentionally not hydrating here — this runs for every playlist on the account on
+        // every login/app-load, regardless of whether the user ever opens it. Hydration is
+        // deferred until the user actually clicks into a playlist (see PlaylistUsed.jsx and
+        // PlaylistPage.jsx), so playlists only used on another device never cost API calls here.
       }
     });
   } finally {
