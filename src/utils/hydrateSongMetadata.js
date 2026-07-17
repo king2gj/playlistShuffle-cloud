@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export default async function hydrateSongMetadata(videoIds) {
   const baseApiUrl = 'https://www.googleapis.com/youtube/v3';
-  const apiKey = 'AIzaSyC3zh5q1dqA0pw4Q72k1C8BBQA2KviXaog'; // same key used in fetchPlaylistVideos.js
+  const apiKey = process.env.YOUTUBE_API_KEY; // same key used in fetchPlaylistVideos.js
   const response = await axios.get(`${baseApiUrl}/videos`, {
     params: {
       part: 'snippet',
