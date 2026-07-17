@@ -7,8 +7,8 @@ export default async function handler(req, res) {
 
     if (req.method === 'GET') {
         const rows = await sql`
-            SELECT playlist_id, playlist_name, playlist_image, playlist_etag,
-                   playlist_length, current_index, shuffled_video_ids
+            SELECT playlist_id, playlist_name, playlist_image, 
+                   playlist_etag, current_index, shuffled_video_ids
             FROM playlists WHERE user_id = ${decoded.userId}
         `;
         return res.status(200).json(rows);
@@ -16,14 +16,13 @@ export default async function handler(req, res) {
 
     if (req.method === 'POST') {
         const {
-            playlistId, playlistName, playlistImage, playlistEtag,
-            playlistLength, shuffledVideoIds,
+            playlistId, playlistName, playlistImage, playlistEtag, shuffledVideoIds,
         } = req.body;
         await sql`
             INSERT INTO playlists
-                (user_id, playlist_id, playlist_name, playlist_image, playlist_etag, playlist_length, shuffled_video_ids)
+                (user_id, playlist_id, playlist_name, playlist_image, playlist_etag, shuffled_video_ids)
             VALUES
-                (${decoded.userId}, ${playlistId}, ${playlistName}, ${playlistImage}, ${playlistEtag}, ${playlistLength}, ${shuffledVideoIds})
+                (${decoded.userId}, ${playlistId}, ${playlistName}, ${playlistImage}, ${playlistEtag}, ${shuffledVideoIds})
             ON CONFLICT (user_id, playlist_id) DO UPDATE SET
                 shuffled_video_ids = EXCLUDED.shuffled_video_ids,
                 updated_at = NOW()

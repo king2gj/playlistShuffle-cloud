@@ -57,7 +57,6 @@ export const addToPlaylistDetails = (payload) => (dispatch, getState) => {
         playlistName: payload.playlistName,
         playlistImage: payload.playlistImage,
         playlistEtag: payload.playlistEtag,
-        playlistLength: payload.playlistLength,
         shuffledVideoIds,
       })
       // eslint-disable-next-line no-console
@@ -102,7 +101,6 @@ export const persistShuffledOrder = (playlistId, songs) => (dispatch, getState) 
       playlistName: details.playlistName,
       playlistImage: details.playlistImage,
       playlistEtag: details.playlistEtag,
-      playlistLength: details.playlistLength,
       shuffledVideoIds,
     })
     // eslint-disable-next-line no-console
@@ -152,7 +150,6 @@ export const loadPlaylistsFromServer = () => async (dispatch, getState) => {
           playlistId: playlist.playlist_id,
           playlistImage: playlist.playlist_image,
           playlistEtag: playlist.playlist_etag,
-          playlistLength: playlist.playlist_length,
           currentIndex: playlist.current_index,
         })),
       ),
