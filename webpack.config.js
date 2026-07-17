@@ -14,11 +14,20 @@ const dotenv = require('dotenv');
 const webpack = require('webpack');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
-const env = dotenv.config().parsed;
+const dotenvParsed = dotenv.config().parsed || {};
 
-const envKeys = Object.keys(env).reduce((prev, next) => {
-  // eslint-disable-next-line
-  prev[`process.env.${next}`] = JSON.stringify(env[next]);
+// Only these variables are safe to expose to the browser bundle. Do not
+// widen this list to spread all of process.env — this app's serverless
+// functions also read server-only secrets (JWT_SECRET, POSTGRES_URL) from
+// process.env, and those must never end up in client-side code.
+const clientEnvKeys = ['YOUTUBE_API_KEY'];
+
+const envKeys = clientEnvKeys.reduce((prev, key) => {
+  const value = dotenvParsed[key] ?? process.env[key];
+  if (value !== undefined) {
+    // eslint-disable-next-line
+    prev[`process.env.${key}`] = JSON.stringify(value);
+  }
   return prev;
 }, {});
 module.exports = {
