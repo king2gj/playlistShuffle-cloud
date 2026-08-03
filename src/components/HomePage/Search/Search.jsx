@@ -188,7 +188,7 @@ function Search({
             To add multiple playlist read&nbsp;
             <a
               className="text-secondary font-semibold font-open hover:scale-110 underline"
-              href="https://github.com/jooonathann/playlistShuffle#How-to-combine-multiple-playlist"
+              href="https://github.com/king2gj/playlistShuffle-cloud#How-to-combine-multiple-playlist"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="github link"

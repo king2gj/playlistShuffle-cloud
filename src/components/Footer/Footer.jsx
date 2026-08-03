@@ -20,14 +20,14 @@ function Footer() {
       </div>
       <div className="flex items-center justify-center">
         <p className="my-1 text-center text-textColor font-open">
-          Made with ♥ by Jonathan
+          Made with ♥
         </p>
         <div className="items-center mx-2 mt-auto mb-0">
           <GitHubButton
-            href="https://github.com/jooonathann/playlistShuffle"
+            href="https://github.com/king2gj/playlistShuffle-cloud"
             data-icon="octicon-star"
             data-show-count="true"
-            aria-label="Star jooonathann/playlistShuffle on GitHub"
+            aria-label="Star king2gj/playlistShuffle-cloud on GitHub"
           >
             Star
           </GitHubButton>

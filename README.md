@@ -4,6 +4,13 @@ Live at: https://shuffle-playlist.vercel.app/
 
 Playlist Shuffle - A web application with a better algorithm than YouTube's for playlist shuffling. Shuffle your music and videos in a smarter way and enjoy an improved listening experience.
 
+This project is a fork of [jooonathann/playlistShuffle](https://github.com/jooonathann/playlistShuffle).
+
+## New in this fork
+
+- **Account login with cloud-synced playlists** — saved playlists are stored per-account in a database instead of only in browser localStorage, so they follow you across devices/browsers.
+- **Data saver mode** — a toggle in the navbar to reduce bandwidth usage.
+
 ## How to combine multiple playlist
 
 The maximum playlist size is "12000"

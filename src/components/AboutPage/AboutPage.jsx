@@ -23,30 +23,34 @@ function AboutPage() {
               here
             </button>
           </p>
-          <p className="mx-4 my-2 list-disc font-open">
-            If you are enjoying the site, you can support it by buying me
-            a&nbsp;
+          <p className="mx-4 my-2 font-open">
+            This project is a fork of&nbsp;
             <a
-              aria-label="buy me a coffee link"
+              aria-label="original playlistShuffle repository"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary"
-              href="https://www.buymeacoffee.com/shufflePlaylist"
+              href="https://github.com/jooonathann/playlistShuffle"
             >
-              coffee
+              jooonathann/playlistShuffle
             </a>
-            . Thank you!
+            , originally created because the shuffle algorithm on YouTube
+            doesn&apos;t effectively shuffle, and other pages didn&apos;t have
+            the features being looked for.
           </p>
           <p className="mx-4 my-2 font-open">
-            I created this because the shuffle algorithm on YouTube doesn&apos;t
-            effectively shuffle, and the other pages I tried didn&apos;t have
-            the features I was looking for.
+            This fork adds account login with cloud-synced playlists (so your
+            saved playlists follow you across devices/browsers instead of
+            living only in this browser&apos;s localStorage) and a data saver
+            mode to reduce bandwidth usage.
           </p>
           <p className="mx-4 my-2 font-open">
-            This page utilizes the browser&apos;s localStorage as the database.
-            In my experience, it can fit at least 20000 worth of videos in
-            playlist on chrome desktop, if you have an error while loading a
-            playlist you will have to deleted it and load it again.
+            Playlist data you save is stored in a database tied to your
+            account. Song metadata (titles, channel names) is still cached in
+            this browser&apos;s localStorage for faster loading, and can fit
+            at least 20000 videos in playlist on chrome desktop; if
+            you have an error while loading a playlist you will have to
+            delete it and load it again.
           </p>
         </div>
       </div>

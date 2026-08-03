@@ -18,7 +18,7 @@ import {
 import setSearchInput from '../../redux/actions/homepageActions';
 import { logoutUser } from '../../redux/actions/authActions';
 import { readDataSaverPreferences, writeDataSaverPreference } from "../../utils/dataSaverPreference";
-import {readStoredTheme, writeStoredTheme} from "../../utils/storeTheme";
+import { writeStoredTheme } from "../../utils/storeTheme";
 
 function Navbar({
   isPlaying,
@@ -111,20 +111,6 @@ function Navbar({
           </button>
           {player.theme === 'image' && (
             <div className="flex">
-              <div className="flex flex-row mx-4 my-auto rounded-md w-44 justify-evenly hover:scale-105 active:scale-110">
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://www.buymeacoffee.com/shufflePlaylist"
-                  aria-label="buy me a coffee link"
-                >
-                  <img
-                    src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=playlistshuffle&button_colour=E94747&font_colour=FFFFFF&font_family=Lato&outline_colour=000000&coffee_colour=FFDD00"
-                    alt="buy me a coffee button"
-                    className="h-[37px]"
-                  />
-                </a>
-              </div>
               <button
                 type="button"
                 aria-label={player.isDataSaverActive ? 'disable data saver mode' : 'enable data saver mode'}
@@ -156,20 +142,6 @@ function Navbar({
           )}
           {player.theme === 'dark' && (
             <div className="flex">
-              <div className="flex flex-row mx-4 my-auto rounded-md w-44 justify-evenly hover:scale-105 active:scale-110">
-                <a
-                  href="https://www.buymeacoffee.com/shufflePlaylist"
-                  aria-label="buy me a coffee link"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img
-                    src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=playlistshuffle&button_colour=008BA7&font_colour=FFFFFF&font_family=Lato&outline_colour=000000&coffee_colour=FFDD00"
-                    alt="buy me a coffee button"
-                    className="h-[37px]"
-                  />
-                </a>
-              </div>
               <button
                 type="button"
                 aria-label={player.isDataSaverActive ? 'disable data saver mode' : 'enable data saver mode'}
@@ -201,20 +173,6 @@ function Navbar({
           )}
           {player.theme === 'light' && (
             <div className="flex">
-              <div className="flex flex-row mx-4 my-auto rounded-md w-44 justify-evenly hover:scale-105 active:scale-110">
-                <a
-                  href="https://www.buymeacoffee.com/shufflePlaylist"
-                  aria-label="buy me a coffee link"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img
-                    src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=playlistshuffle&button_colour=006868&font_colour=FFFFFF&font_family=Lato&outline_colour=000000&coffee_colour=FFDD00"
-                    alt="buy me a coffee button"
-                    className="h-[37px]"
-                  />
-                </a>
-              </div>
               <button
                 type="button"
                 aria-label={player.isDataSaverActive ? 'disable data saver mode' : 'enable data saver mode'}
