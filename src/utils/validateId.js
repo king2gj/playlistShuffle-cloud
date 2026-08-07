@@ -9,8 +9,8 @@ export default function validateId(str) {
   const PLRegex = /(PL|OLAK|RD|UU)[\w-]+(?=&|$)/;
   const minLength = 13;
 
-  if (arrayOfIds[0].toLowerCase() === 'play my pl') {
-    return 'PLi06ybkpczJDt0Ydo3Umjtv97bDOcCtAZ';
+  if (arrayOfIds[0].toLowerCase() === 'gavin') {
+    return 'PLIO00ZEteKCvVxwuqM7436xyST3GLTzkb';
   }
   if (arrayOfIds.length === 1) {
     try {

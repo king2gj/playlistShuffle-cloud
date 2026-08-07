@@ -133,37 +133,10 @@ function Player({
   };
 
   const getTitleAndArtist = (title, ownerTitle) => {
-    try {
-      const joinedTitleAndOwnerTitle = [title, ownerTitle];
-      if (title === 'Private video' || title === UNAVAILABLE_VIDEO_TITLE) {
-        return title;
-      }
-      if (joinedTitleAndOwnerTitle[0].includes(' - ')) {
-        const regex = /^(.*?)-(.*)$/;
-        const match = joinedTitleAndOwnerTitle[0].match(regex);
-
-        const [, artist, title] = match;
-
-        return [title, artist];
-      }
-      if (joinedTitleAndOwnerTitle[0].includes('//')) {
-        const regex = /^(.*?)\s\/\/\s(.*)$/;
-        const match = joinedTitleAndOwnerTitle[0].match(regex);
-
-        const [, artist, title] = match;
-
-        return [title, artist];
-      }
-      if (joinedTitleAndOwnerTitle[1].includes(' - Topic')) {
-        const regex = /^(.*?)\s-\sTopic$/;
-        const match = joinedTitleAndOwnerTitle[1].match(regex);
-        const artist = match[1];
-        return [title, artist];
-      }
-      return [title, ownerTitle];
-    } catch (error) {
+    if (title === 'Private video' || title === UNAVAILABLE_VIDEO_TITLE) {
       return title;
     }
+    return [title, ownerTitle];
   };
 
   const handleReady = () => {
