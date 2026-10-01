@@ -8,6 +8,7 @@ import {
   PLAYLIST_DETAILS_LENGTH,
 } from "../constants/playlistDetailsTypes";
 import { AUTH_PLAYLISTS_LOADED } from "../constants/authTypes";
+import { logoutUser } from './authActions';
 import api from "../../utils/api";
 import {
   addSongsByPlaylistID,
@@ -183,8 +184,10 @@ export const loadPlaylistsFromServer = () => async (dispatch, getState) => {
       }
     });
   } catch (err) {
-      if (err.response?.status === 401)
+      if (err.response?.status === 401) {
+          dispatch(logoutUser());
           window.location.href = "/login";
+      }
   } finally {
     // Always flips, even on failure, so a direct/refresh navigation to a playlist page
     // doesn't get stuck waiting forever — see PlaylistPage.jsx's use of this flag.
