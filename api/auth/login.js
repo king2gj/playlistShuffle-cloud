@@ -12,11 +12,11 @@ export default async function handler(req, res) {
         const rows = await sql`
             SELECT id, password_hash
             FROM users
-            WHERE username = ${username}
+            WHERE LOWER(username) = LOWER(${username})
         `;
         const user = rows[0];
         if (user && (await bcrypt.compare(password, user.password_hash))) {
-            const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '10s' });
+            const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '90d' });
             return res.status(201).json({ token, username });
         }
         throw Error;
