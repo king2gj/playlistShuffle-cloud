@@ -15,7 +15,7 @@ export default async function handler(req, res) {
             VALUES (${username}, ${passwordHash})
             RETURNING id
         `;
-        const token = jwt.sign({ userId: rows[0].id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+        const token = jwt.sign({ userId: rows[0].id }, process.env.JWT_SECRET, { expiresIn: '90d' });
         return res.status(201).json({ token, username });
     } catch (err) {
         return res.status(409).json({ error: 'Username already taken' });

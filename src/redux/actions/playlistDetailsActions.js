@@ -182,6 +182,9 @@ export const loadPlaylistsFromServer = () => async (dispatch, getState) => {
         // PlaylistPage.jsx), so playlists only used on another device never cost API calls here.
       }
     });
+  } catch (err) {
+      if (err.response?.status === 401)
+          window.location.href = "/login";
   } finally {
     // Always flips, even on failure, so a direct/refresh navigation to a playlist page
     // doesn't get stuck waiting forever — see PlaylistPage.jsx's use of this flag.

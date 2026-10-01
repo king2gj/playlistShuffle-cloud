@@ -16,7 +16,7 @@ export default async function handler(req, res) {
         `;
         const user = rows[0];
         if (user && (await bcrypt.compare(password, user.password_hash))) {
-            const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '90d' });
+            const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '10s' });
             return res.status(201).json({ token, username });
         }
         throw Error;
