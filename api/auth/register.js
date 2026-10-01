@@ -12,7 +12,7 @@ export default async function handler(req, res) {
     try {
         const rows = await sql`
             INSERT INTO users (username, password_hash)
-            VALUES (${username}, ${passwordHash})
+            VALUES (LOWER(${username}), ${passwordHash})
             RETURNING id
         `;
         const token = jwt.sign({ userId: rows[0].id }, process.env.JWT_SECRET, { expiresIn: '90d' });
